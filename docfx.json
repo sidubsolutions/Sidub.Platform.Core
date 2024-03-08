@@ -1,0 +1,16 @@
+{
+  "metadata": [
+    // Filter...
+    {
+      "src": [
+        {
+          "files": [ "**/*.csproj" ],
+          "exclude": [ "**/bin/**", "**/obj/**" ],
+          "src": "./Core/"
+        }
+      ],
+      "dest": "./_DocFX/Core/",
+      "shouldSkipMarkup": false
+    }
+  ]
+}
