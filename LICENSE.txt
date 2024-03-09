@@ -3,7 +3,8 @@ Copyright (C) 2024 Sidub Solutions
 All rights reserved.
 
 The core package is part of the Sidub Platform. The terms of license set forth
-are shared among all components of the Sidub Platform.
+are shared among all components of the Sidub Platform unless stated
+otherwise.
 
 This software is dual-licensed, offering users the choice between the Affero
 General Public License (AGPL) version 3 for open-source use, and a proprietary

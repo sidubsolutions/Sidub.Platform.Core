@@ -114,6 +114,8 @@ namespace Sidub.Platform.Core.Serializers.Json.Converters
 
             #endregion
 
+            #region Public methods
+
             /// <inheritdoc/>
             public override TEntity? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
             {
@@ -344,6 +346,8 @@ namespace Sidub.Platform.Core.Serializers.Json.Converters
 
                 writer.WriteEndObject();
             }
+
+            #endregion
 
         }
 
