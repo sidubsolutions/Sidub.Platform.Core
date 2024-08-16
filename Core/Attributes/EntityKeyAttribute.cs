@@ -15,6 +15,20 @@ namespace Sidub.Platform.Core.Attributes
     public class EntityKeyAttribute<TValue> : EntityFieldAttribute<TValue>, IEntityField
     {
 
+        #region Constructors
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="EntityKeyAttribute{TValue}"/> class.
+        /// </summary>
+        /// <param name="name">The name of the entity key field.</param>
+        /// <param name="label">The label of the entity key field.</param>
+        public EntityKeyAttribute(string name, string? label = null, int ordinalPosition = 0) : base(name, label)
+        {
+            OrdinalPosition = ordinalPosition;
+        }
+
+        #endregion
+
         #region IEntityField implementation
 
         /// <summary>
@@ -23,27 +37,6 @@ namespace Sidub.Platform.Core.Attributes
         bool IEntityField.IsKeyField => true;
 
         #endregion
-
-        #region Public properties
-
-        // Public properties go here
-
-        #endregion
-
-        #region Constructors
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="EntityKeyAttribute{TValue}"/> class.
-        /// </summary>
-        /// <param name="name">The name of the entity key field.</param>
-        /// <param name="label">The label of the entity key field.</param>
-        public EntityKeyAttribute(string name, string? label = null) : base(name, label)
-        {
-
-        }
-
-        #endregion
-
     }
 
 }

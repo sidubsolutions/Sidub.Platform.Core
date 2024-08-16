@@ -167,14 +167,17 @@ namespace Sidub.Platform.Core.Serializers.Json
             var jsonSerializerOptions = new JsonSerializerOptions(_serializerOptions);
 
             var attributeEntityConverter = new AttributeEntityConverterFactory(typed);
-            var attributeEntityRecordRelationConverter = new AttributeEntityReferenceConverterFactory(typed);
-            var attributeEntityEnumerableRelationConverter = new AttributeEntityReferenceListConverterFactory(typed);
+            var attributeEntityRecordRelationConverter = new AttributeEntityReferenceConverter(typed);
+            var attributeEntityEnumerableRelationConverter = new AttributeEntityReferenceListConverter(typed);
 
             var dictionaryConverter = new DictionaryStringObjectJsonConverter();
             var typeDiscriminatorConverter = new TypeDiscriminatorJsonConverter();
             var enumConverter = new JsonStringEnumConverter(allowIntegerValues: false);
             var dateTimeConverter = new DateTimeJsonConverter();
             var dateTimeNullableConverter = new DateTimeNullableJsonConverter();
+
+            foreach (var i in typed.Converters)
+                jsonSerializerOptions.Converters.Add(i);
 
             jsonSerializerOptions.Converters.Add(attributeEntityConverter);
             jsonSerializerOptions.Converters.Add(attributeEntityRecordRelationConverter);
@@ -184,9 +187,6 @@ namespace Sidub.Platform.Core.Serializers.Json
             jsonSerializerOptions.Converters.Add(enumConverter);
             jsonSerializerOptions.Converters.Add(dateTimeConverter);
             jsonSerializerOptions.Converters.Add(dateTimeNullableConverter);
-
-            foreach (var i in typed.Converters)
-                jsonSerializerOptions.Converters.Add(i);
 
             return jsonSerializerOptions;
         }

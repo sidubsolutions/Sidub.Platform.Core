@@ -29,6 +29,11 @@
         /// </summary>
         Type FieldType { get; }
 
+        /// <summary>
+        /// Gets the ordinal position of the field.
+        /// </summary>
+        int OrdinalPosition { get; }
+
         #endregion
 
     }

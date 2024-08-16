@@ -1,5 +1,6 @@
 ﻿#region Imports
 
+using Sidub.Platform.Core.Entity;
 using System.Text.Json.Serialization;
 
 #endregion
@@ -39,6 +40,7 @@ namespace Sidub.Platform.Core.Serializers.Json
         /// Gets or sets a value indicating whether to serialize relationships.
         /// </summary>
         public bool SerializeRelationships { get; set; }
+        public List<IEntityField> ExcludedFields { get; set; }
 
         #endregion
 
@@ -53,6 +55,7 @@ namespace Sidub.Platform.Core.Serializers.Json
             FieldSerialization = EntityFieldType.Keys | EntityFieldType.Fields;
             Converters = new List<JsonConverter>();
             SerializeRelationships = false;
+            ExcludedFields = new List<IEntityField>();
         }
 
         #endregion
@@ -71,6 +74,7 @@ namespace Sidub.Platform.Core.Serializers.Json
             result.FieldSerialization = FieldSerialization;
             result.Converters.AddRange(Converters);
             result.SerializeRelationships = SerializeRelationships;
+            result.ExcludedFields.AddRange(ExcludedFields);
 
             return result;
         }

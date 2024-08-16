@@ -171,7 +171,7 @@ public void ConfigureServices(IServiceCollection services)
 ```
 
 Once services are registered, you can access them by injecting the
-`IMetadataService` interface and accessing the 
+`IServiceRegistry` interface and accessing the 
 `GetMetadata<TServiceReferenceMetadata>` method, providing the service
 context. The service context is a record type object, thus any initializaiton
 of a given ServiceReference with the same `Name` will match equality conditions.
@@ -180,9 +180,9 @@ of a given ServiceReference with the same `Name` will match equality conditions.
 public class MyService
 {
 
-  private readonly IMetadataService _metadataService;
+  private readonly IServiceRegistry _metadataService;
 
-  public MyService(IMetadataService metadataService)
+  public MyService(IServiceRegistry metadataService)
   {
     _metadataService = metadataService;
   }

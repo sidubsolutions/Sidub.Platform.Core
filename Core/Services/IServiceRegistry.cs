@@ -43,7 +43,7 @@ namespace Sidub.Platform.Core.Services
         /// <typeparam name="TServiceReferenceMetadata">Type of metadata.</typeparam>
         /// <param name="context">The ServiceReference context to search; relationships will also be analyzed.</param>
         /// <returns>Enumerable of metadata, if found.</returns>
-        IEnumerable<TServiceReferenceMetadata> GetMetadata<TServiceReferenceMetadata>(ServiceReference? context) where TServiceReferenceMetadata : class, IServiceMetadata;
+        IEnumerable<TServiceReferenceMetadata> GetMetadata<TServiceReferenceMetadata>(ServiceReference? context) where TServiceReferenceMetadata : IServiceMetadata;
 
         #endregion
 

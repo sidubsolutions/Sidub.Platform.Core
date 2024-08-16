@@ -4,8 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Sidub.Platform.Core.Entity.Partitions;
 using Sidub.Platform.Core.Serializers;
-using Sidub.Platform.Core.Serializers.Json;
-using Sidub.Platform.Core.Serializers.Xml;
 using Sidub.Platform.Core.Services;
 using Sidub.Platform.Localization;
 
@@ -42,9 +40,9 @@ namespace Sidub.Platform.Core
 
             services.TryAddTransient<IPartitionProvider, DefaultPartitionProvider>();
 
-            services.TryAddEnumerable(ServiceDescriptor.Transient<IEntitySerializer, AttributeEntityJsonSerializer>());
-            services.TryAddEnumerable(ServiceDescriptor.Transient<IEntitySerializer, AttributeEntityXmlSerializer>());
-            services.TryAddEnumerable(ServiceDescriptor.Transient<IEntitySerializer, EntityJsonSerializer>());
+            services.TryAddEnumerable(ServiceDescriptor.Transient<IEntitySerializer, Serializers.Json.AttributeEntityJsonSerializer>());
+            services.TryAddEnumerable(ServiceDescriptor.Transient<IEntitySerializer, Serializers.Xml.AttributeEntityXmlSerializer>());
+            services.TryAddEnumerable(ServiceDescriptor.Transient<IEntitySerializer, Serializers.Json.EntityJsonSerializer>());
             services.TryAddTransient<IEntitySerializerService, EntitySerializerService>();
 
             services.TryAddEnumerable(ServiceDescriptor.Transient<ILocalizationResource, GlobalResources>());

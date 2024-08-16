@@ -32,7 +32,7 @@ namespace Sidub.Platform.Core.Test
 
             var serviceProvider = serviceCollection.BuildServiceProvider();
 
-            _entityMetadataService = serviceProvider.GetService<IServiceRegistry>() ?? throw new Exception("IMetadataService not initialized.");
+            _entityMetadataService = serviceProvider.GetService<IServiceRegistry>() ?? throw new Exception("IServiceRegistry not initialized.");
             _entityPartitionService = serviceProvider.GetService<IEntityPartitionService>() ?? throw new Exception("IEntityPartitionService not initialized.");
 
             var ServiceReference = new StorageServiceReference("TestStorage01");

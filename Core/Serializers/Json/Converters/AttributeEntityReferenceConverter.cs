@@ -13,7 +13,7 @@ namespace Sidub.Platform.Core.Serializers.Json.Converters
     /// <summary>
     /// Converts an <see cref="IEntityReference"/> to and from JSON.
     /// </summary>
-    public class AttributeEntityReferenceConverterFactory : JsonConverterFactory
+    public class AttributeEntityReferenceConverter : JsonConverterFactory
     {
 
         #region Member variables
@@ -25,10 +25,10 @@ namespace Sidub.Platform.Core.Serializers.Json.Converters
         #region Constructors
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AttributeEntityReferenceConverterFactory"/> class.
+        /// Initializes a new instance of the <see cref="AttributeEntityReferenceSerializer"/> class.
         /// </summary>
         /// <param name="serializerOptions">The <see cref="JsonEntitySerializerOptions"/> to use.</param>
-        public AttributeEntityReferenceConverterFactory(JsonEntitySerializerOptions serializerOptions)
+        public AttributeEntityReferenceConverter(JsonEntitySerializerOptions serializerOptions)
         {
             _entitySerializerOptions = serializerOptions;
         }
@@ -52,7 +52,7 @@ namespace Sidub.Platform.Core.Serializers.Json.Converters
             var args = typeToConvert.GetGenericArguments();
             var tRelated = args[0];
 
-            Type converterType = typeof(AttributeEntityRelationConverter<>).MakeGenericType(new[] { tRelated });
+            Type converterType = typeof(Converter<>).MakeGenericType(new[] { tRelated });
             var converter = Activator.CreateInstance(converterType, _entitySerializerOptions.Clone());
 
             return (JsonConverter?)converter;
@@ -64,7 +64,7 @@ namespace Sidub.Platform.Core.Serializers.Json.Converters
         /// Converts an <see cref="IEntityReference"/> to and from JSON.
         /// </summary>
         /// <typeparam name="TRelated">The type of the related entity.</typeparam>
-        public class AttributeEntityRelationConverter<TRelated> : JsonConverter<IEntityReference>
+        private class Converter<TRelated> : JsonConverter<IEntityReference>
             where TRelated : IEntity
         {
 
@@ -84,10 +84,10 @@ namespace Sidub.Platform.Core.Serializers.Json.Converters
             #region Constructors
 
             /// <summary>
-            /// Initializes a new instance of the <see cref="AttributeEntityRelationConverter{TRelated}"/> class.
+            /// Initializes a new instance of the <see cref="Converter{TRelated}"/> class.
             /// </summary>
             /// <param name="serializerOptions">The <see cref="JsonEntitySerializerOptions"/> to use.</param>
-            public AttributeEntityRelationConverter(JsonEntitySerializerOptions serializerOptions)
+            public Converter(JsonEntitySerializerOptions serializerOptions)
             {
                 _serializerOptions = serializerOptions;
             }

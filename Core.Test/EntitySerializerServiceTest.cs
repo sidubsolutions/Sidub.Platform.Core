@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Sidub.Platform.Core.Entity.Relations;
 using Sidub.Platform.Core.Serializers;
 using Sidub.Platform.Core.Serializers.Json;
+using Sidub.Platform.Core.Serializers.Xml;
 using Sidub.Platform.Core.Services;
 using Sidub.Platform.Core.Test.Models;
 using Sidub.Platform.Core.Test.TestServiceReferences;
@@ -247,6 +248,41 @@ namespace Sidub.Platform.Core.Test
         }
 
         [TestMethod]
+        public void SerializerOptionsCloning()
+        {
+            JsonEntitySerializerOptions options = SerializerOptions.New<JsonEntitySerializerOptions>();
+            var field = EntityTypeHelper.GetEntityField<TestModel>("ModelDescription");
+            options.ExcludedFields.Add(field);
+            Assert.AreEqual(1, options.ExcludedFields.Count);
+
+            JsonEntitySerializerOptions options2 = SerializerOptions.Default<JsonEntitySerializerOptions>();
+            Assert.AreEqual(0, options2.ExcludedFields.Count);
+        }
+
+        [TestMethod]
+        public void AttributeSerializeEntityExcludeFields01()
+        {
+            JsonEntitySerializerOptions options = SerializerOptions.New<JsonEntitySerializerOptions>();
+            var field = EntityTypeHelper.GetEntityField<TestModel>("ModelDescription");
+            options.ExcludedFields.Add(field);
+            Guid id = Guid.NewGuid();
+
+            var model = new TestModel()
+            {
+                Id = id,
+                Description = "test"
+            };
+
+            var result = _entitySerializerService.SerializeDictionary(model, options);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(2, result.Count);
+            Assert.IsTrue(result.ContainsKey("Id"));
+            Assert.IsTrue(result.ContainsKey("Counter"));
+            Assert.AreEqual(id.ToString("D"), result["Id"]);
+        }
+
+        [TestMethod]
         public void AttributeSerializeAndDeserializeEntity01()
         {
             var options = SerializerOptions.Default<JsonEntitySerializerOptions>();
@@ -368,6 +404,27 @@ namespace Sidub.Platform.Core.Test
             var container = new SpecializedContainer();
             var serializedBytes = _entitySerializerService.Serialize(container, SerializerOptions.Default(SerializationLanguageType.Json));
             var serialized = System.Text.Encoding.UTF8.GetString(serializedBytes);
+        }
+
+        [TestMethod]
+        public void SerializeAndDeserializeRelationshipsInXml()
+        {
+            var options = SerializerOptions.Default<XmlEntitySerializerOptions>();
+            options.SerializeRelationships = true;
+
+            var uri = new Uri("https://test.ca/");
+            var navItem = new NavigationAction("id", "title", new NavigationActionTargetPage(uri)) { Description = "desc" };
+
+            var serialization = _entitySerializerService.Serialize(navItem, options);
+            var deserialized = _entitySerializerService.Deserialize<NavigationAction>(serialization, options);
+
+            Assert.AreEqual("id", deserialized.Id);
+            Assert.AreEqual("title", deserialized.Title);
+            Assert.AreEqual("desc", deserialized.Description);
+
+            Assert.IsNotNull(deserialized.Target);
+            Assert.AreEqual(1, deserialized.Target.EntityKeys.Count);
+
         }
 
         #endregion

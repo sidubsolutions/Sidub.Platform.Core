@@ -1,4 +1,6 @@
-﻿namespace Sidub.Platform.Core.Serializers.Xml
+﻿using Sidub.Platform.Core.Entity;
+
+namespace Sidub.Platform.Core.Serializers.Xml
 {
 
     /// <summary>
@@ -28,6 +30,7 @@
         /// Gets or sets a value indicating whether to serialize relationships.
         /// </summary>
         public bool SerializeRelationships { get; set; } = false;
+        public List<IEntityField> ExcludedFields { get; set; } = new List<IEntityField>();
 
         #endregion
 
@@ -43,6 +46,8 @@
 
             result.IncludeTypeInfo = IncludeTypeInfo;
             result.FieldSerialization = FieldSerialization;
+            result.SerializeRelationships = SerializeRelationships;
+            result.ExcludedFields.AddRange(ExcludedFields);
 
             return result;
         }

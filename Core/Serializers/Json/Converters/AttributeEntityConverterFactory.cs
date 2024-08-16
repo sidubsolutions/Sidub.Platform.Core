@@ -289,9 +289,15 @@ namespace Sidub.Platform.Core.Serializers.Json.Converters
                     writer.WriteString(TypeDiscriminatorEntityField.Instance.FieldName, typeDiscriminator.ToString());
                 }
 
+                var fieldComparer = new EntityFieldComparer();
+
                 // write fields...
                 foreach (var i in entityFields)
                 {
+                    // ensure the field is not excluded...
+                    if (_serializerOptions.ExcludedFields.Any(x => fieldComparer.Equals(i, x)))
+                        continue;
+
                     writer.WritePropertyName(i.FieldName);
 
                     var entityFieldType = i.FieldType;

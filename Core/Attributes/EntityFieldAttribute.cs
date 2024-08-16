@@ -16,20 +16,6 @@ namespace Sidub.Platform.Core.Attributes
     public class EntityFieldAttribute<TValue> : Attribute, IEntityField
     {
 
-        #region IEntityField implementation
-
-        /// <summary>
-        /// Gets a value indicating whether the field is a key field.
-        /// </summary>
-        bool IEntityField.IsKeyField => false;
-
-        /// <summary>
-        /// Gets the type of the field.
-        /// </summary>
-        Type IEntityField.FieldType => typeof(TValue);
-
-        #endregion
-
         #region Public properties
 
         /// <summary>
@@ -41,6 +27,8 @@ namespace Sidub.Platform.Core.Attributes
         /// Gets the label of the field.
         /// </summary>
         public string Label { get; }
+
+        public int OrdinalPosition { get; protected set; }
 
         #endregion
 
@@ -56,6 +44,20 @@ namespace Sidub.Platform.Core.Attributes
             FieldName = name;
             Label = label ?? name;
         }
+
+        #endregion
+
+        #region IEntityField implementation
+
+        /// <summary>
+        /// Gets a value indicating whether the field is a key field.
+        /// </summary>
+        bool IEntityField.IsKeyField => false;
+
+        /// <summary>
+        /// Gets the type of the field.
+        /// </summary>
+        Type IEntityField.FieldType => typeof(TValue);
 
         #endregion
 

@@ -12,7 +12,7 @@ namespace Sidub.Platform.Core.Entity
         /// <summary>
         /// Gets or sets the signature of the entity.
         /// </summary>
-        [EntityField<byte[]>("Signature")]
+        [EntityField<byte[]>("__sidub_entitySignature")]
         public byte[]? Signature { get; set; }
 
     }

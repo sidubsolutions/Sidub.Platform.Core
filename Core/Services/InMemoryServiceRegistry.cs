@@ -122,7 +122,7 @@ namespace Sidub.Platform.Core.Services
         /// <typeparam name="TServiceReferenceMetadata">Type of metadata.</typeparam>
         /// <param name="context">The ServiceReference context to search; relationships will also be analyzed.</param>
         /// <returns>Enumerable of metadata, if found.</returns>
-        public IEnumerable<TServiceReferenceMetadata> GetMetadata<TServiceReferenceMetadata>(ServiceReference? ServiceReference = null) where TServiceReferenceMetadata : class, IServiceMetadata
+        public IEnumerable<TServiceReferenceMetadata> GetMetadata<TServiceReferenceMetadata>(ServiceReference? ServiceReference = null) where TServiceReferenceMetadata : IServiceMetadata
         {
             var result = Enumerable.Empty<TServiceReferenceMetadata>();
             var ServiceReferencesToProcess = ServiceReference is null
@@ -145,7 +145,7 @@ namespace Sidub.Platform.Core.Services
         /// <typeparam name="TServiceReferenceMetadata">Type of metadata.</typeparam>
         /// <param name="context">ServiceReference context to search.</param>
         /// <returns>Enumerable of metadata, if found.</returns>
-        private IEnumerable<TServiceReferenceMetadata> GetServiceReferenceMetadata<TServiceReferenceMetadata>(ServiceReference context) where TServiceReferenceMetadata : class, IServiceMetadata
+        private IEnumerable<TServiceReferenceMetadata> GetServiceReferenceMetadata<TServiceReferenceMetadata>(ServiceReference context) where TServiceReferenceMetadata : IServiceMetadata
         {
             var currentServiceReference = context;
 
@@ -154,8 +154,8 @@ namespace Sidub.Platform.Core.Services
 
             var currentMetadata = ServiceReferenceMetadata[currentServiceReference];
 
-            IEnumerable<TServiceReferenceMetadata> result = currentMetadata is TServiceReferenceMetadata
-                ? new[] { (currentMetadata as TServiceReferenceMetadata)! }.AsEnumerable()
+            IEnumerable<TServiceReferenceMetadata> result = currentMetadata is TServiceReferenceMetadata castMetadata
+                ? new[] { castMetadata }.AsEnumerable()
                 : Enumerable.Empty<TServiceReferenceMetadata>();
 
             // iterate through ServiceReference relations to see if the desired type has been associated...

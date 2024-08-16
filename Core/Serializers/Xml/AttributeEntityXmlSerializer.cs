@@ -2,6 +2,7 @@
 
 using Sidub.Platform.Core.Entity;
 using Sidub.Platform.Core.Entity.ChangeTracking;
+using Sidub.Platform.Core.Serializers.Xml.Converters;
 using System.Xml;
 
 #endregion
@@ -88,6 +89,9 @@ namespace Sidub.Platform.Core.Serializers.Xml
                 ConformanceLevel = ConformanceLevel.Fragment
             };
 
+            if (options is not XmlEntitySerializerOptions xmlOptions)
+                throw new Exception("Invalid serializer options.");
+
             using var memoryStream = new MemoryStream();
             using var writer = XmlWriter.Create(memoryStream, settings);
 
@@ -109,18 +113,46 @@ namespace Sidub.Platform.Core.Serializers.Xml
                 var fieldValue = EntityTypeHelper.GetEntityFieldValue(entity, i);
                 string? fieldString = null;
                 // todo - elaborate!
-                fieldString = fieldValue switch
-                {
-                    int intValue => intValue.ToString(),
-                    long longValue => longValue.ToString(),
-                    Guid guidValue => guidValue.ToString("B"),
-                    string stringValue => stringValue,
-                    byte[] byteArrayValue => Convert.ToBase64String(byteArrayValue),
-                    null => "",
-                    _ => throw new Exception($"Unhandled value type '{fieldValue?.GetType().Name}' in XML serializer."),
-                };
+                fieldString = XmlValueSerializer.Write(fieldValue);
                 writer.WriteValue(fieldString ?? string.Empty);
                 writer.WriteEndElement();
+            }
+
+            // write relations...
+            if (xmlOptions.SerializeRelationships)
+            {
+                var relations = EntityTypeHelper.GetEntityRelations<TEntity>();
+
+                foreach (var relation in relations)
+                {
+                    //writer.WriteStartElement(relation.Name);
+
+                    if (relation.IsEnumerableRelation)
+                    {
+                        // handle enumerable relations...
+                        var relationReference = EntityTypeHelper.GetEntityRelationEnumerable(entity, relation)
+                            ?? throw new Exception("Failed to retrieve relation enumerable reference.");
+
+                        var relationBuilder = AttributeEntityReferenceListConverter.Create(relation.RelatedType);
+                        writer.WriteStartElement(relation.Name);
+                        relationBuilder.Write(writer, relationReference, xmlOptions);
+                        writer.WriteEndElement();
+                    }
+                    else
+                    {
+                        // handle singular relations...
+                        var relationReference = EntityTypeHelper.GetEntityRelationRecord(entity, relation)
+                            ?? throw new Exception("Failed to retrieve relation record reference.");
+
+                        var relationBuilder = AttributeEntityReferenceConverter.Create(relation.RelatedType);
+                        writer.WriteStartElement(relation.Name);
+                        relationBuilder.Write(writer, relationReference, xmlOptions);
+                        writer.WriteEndElement();
+                    }
+
+                    //writer.WriteEndElement();
+                }
+
             }
 
             // append the additional fields...
@@ -282,6 +314,9 @@ namespace Sidub.Platform.Core.Serializers.Xml
 
             TEntity result;
 
+            if (options is not XmlEntitySerializerOptions xmlOptions)
+                throw new Exception("Invalid serializer options.");
+
             if (typeof(TEntity).IsInterface || typeof(TEntity).IsAbstract)
             {
                 // if our target type is an interface or abstract class, we need to derive type information...
@@ -349,6 +384,7 @@ namespace Sidub.Platform.Core.Serializers.Xml
                     // only increment depth when the element has content...
                     if (!reader.IsEmptyElement)
                         objectDepth++;
+
                 }
 
                 if (reader.NodeType == XmlNodeType.EndElement)
@@ -368,7 +404,7 @@ namespace Sidub.Platform.Core.Serializers.Xml
 
                 if (objectDepth == 1)
                 {
-
+                    // object depth of one means we're at the root element... 
                 }
                 else
                 {
@@ -389,11 +425,11 @@ namespace Sidub.Platform.Core.Serializers.Xml
 
                             // if the property matches an entity field, assign it...
                             var targetType = entityField.FieldType;
-                            var fieldSerializer = EntityTypeHelper.GetEntityFieldConverter(result, entityField);
 
                             //if (fieldSerializer is not null)
                             //    innerOptions = new XmlEntitySerializerOptions(options).With(x => x.Converters.Add(fieldSerializer));
                             //var serializer = new XmlSerializer(targetType);
+
                             var deserialized = reader.ReadElementContentAs(targetType, resolver);
                             skipRead = true;
                             objectDepth--;
@@ -405,8 +441,35 @@ namespace Sidub.Platform.Core.Serializers.Xml
                         }
                         else if (relation is not null)
                         {
-                            // the current field is an entity relation... start a new relationship builder...
-                            throw new NotImplementedException("XML serializer does not yet support entity relations.");
+
+
+                            // if the property matches an entity relation, assign it...
+                            if (relation.IsEnumerableRelation)
+                            {
+                                // handle enumerable relations...
+                                var builder = AttributeEntityReferenceListConverter.Create(relation.RelatedType);
+                                var reference = builder.Read(ref reader, xmlOptions);
+
+                                if (reference is null)
+                                    throw new Exception("Failed to deserialize entity record reference as IEntityReferenceList.");
+
+                                EntityTypeHelper.SetEntityRelationReference(result, relation, reference);
+                            }
+                            else
+                            {
+                                // handle singular relations...
+                                var builder = AttributeEntityReferenceConverter.Create(relation.RelatedType);
+                                var reference = builder.Read(ref reader, xmlOptions);
+
+                                if (reference is null && Nullable.GetUnderlyingType(relation.RelatedType) is null)
+                                    throw new Exception("Failed to deserialize entity record reference as IEntityReference.");
+
+                                EntityTypeHelper.SetEntityRelationReference(result, relation, reference);
+                            }
+
+                            // note that we need to decrement our depth here, as the relation deserialization will have already
+                            //  read the end element...
+                            objectDepth--;
                         }
                         else
                         {

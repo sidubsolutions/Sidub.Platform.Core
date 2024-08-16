@@ -142,6 +142,36 @@ namespace Sidub.Platform.Core
         }
 
         /// <summary>
+        /// Gets the name of the entity.
+        /// </summary>
+        /// <param name="relation">The entity.</param>
+        /// <returns>The name of the entity.</returns>
+        public static string? GetEntityName(IEntityRelation relation)
+        {
+            return GetEntityName(relation.RelatedType);
+        }
+
+        /// <summary>
+        /// Gets the name of the entity.
+        /// </summary>
+        /// <param name="reference">The entity.</param>
+        /// <returns>The name of the entity.</returns>
+        public static string? GetEntityName(IEntityReference reference)
+        {
+            return GetEntityName(reference.EntityType);
+        }
+
+        /// <summary>
+        /// Gets the name of the entity.
+        /// </summary>
+        /// <param name="reference">The entity.</param>
+        /// <returns>The name of the entity.</returns>
+        public static string? GetEntityName(IEntityReferenceList reference)
+        {
+            return GetEntityName(reference.EntityType);
+        }
+
+        /// <summary>
         /// Gets the entity field with the specified name for the given entity type.
         /// </summary>
         /// <param name="entityType">The type discriminator of the entity.</param>
@@ -189,6 +219,28 @@ namespace Sidub.Platform.Core
         public static IEntityField? GetEntityField<TEntity>(string fieldName)
         {
             return GetEntityField(typeof(TEntity), fieldName);
+        }
+
+        /// <summary>
+        /// Gets the entity field with the specified ordinal position from the given entity.
+        /// </summary>
+        /// <param name="entity">The entity.</param>
+        /// <param name="ordinalPosition">The ordinal position of the field.</param>
+        /// <returns>The entity field with the specified name, or null if not found.</returns>
+        public static IEntityField? GetEntityField(IEntity entity, int ordinalPosition)
+        {
+            return GetEntityField(entity.GetType(), ordinalPosition);
+        }
+
+        /// <summary>
+        /// Gets the entity field with the specified ordinal position from the given entity.
+        /// </summary>
+        /// <typeparam name="TEntity">The type of the entity.</typeparam>
+        /// <param name="ordinalPosition">The ordinal position of the field.</param>
+        /// <returns>The entity field with the specified name, or null if not found.</returns>
+        public static IEntityField? GetEntityField<TEntity>(int ordinalPosition)
+        {
+            return GetEntityField(typeof(TEntity), ordinalPosition);
         }
 
         /// <summary>
@@ -312,17 +364,17 @@ namespace Sidub.Platform.Core
         public static IEnumerable<IEntityRelation> GetEntityRelations<TParent>()
             where TParent : IEntity
         {
-            var entityInterfaces = GetEntityInterfaces(typeof(TParent));
+            return GetEntityRelations(typeof(TParent));
+        }
 
-            // retrieve relation properties - properties TParent and any interfaces which have an attribute implementing IEntityRelation
-            var properties = typeof(TParent)
-                .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
-                .Union(entityInterfaces.SelectMany(x => x.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)))
-                .Where(x => x.GetCustomAttributes(true).Any(y => y is IEntityRelation));
-
-            var result = properties.Select(x => x.GetCustomAttributes(true).OfType<IEntityRelation>().Single());
-
-            return result;
+        /// <summary>
+        /// Gets the entity relations for the specified parent entity.
+        /// </summary>
+        /// <param name="entity">The entity to retrieve relations for.</param>
+        /// <returns>The entity relations.</returns>
+        public static IEnumerable<IEntityRelation> GetEntityRelations(IEntity entity)
+        {
+            return GetEntityRelations(entity.GetType());
         }
 
         /// <summary>
@@ -545,6 +597,25 @@ namespace Sidub.Platform.Core
         }
 
         /// <summary>
+        /// Gets the entity field with the specified ordinal position from the given entity.
+        /// </summary>
+        /// <param name="TEntity">The type of the entity.</param>
+        /// <param name="ordinalPosition">The </param>
+        /// <returns>The entity field with the specified name, or null if not found.</returns>
+        private static IEntityField? GetEntityField(Type TEntity, int ordinalPosition)
+        {
+            if (ordinalPosition == 0)
+                throw new ArgumentException($"Ordinal positions of '0' cannot be used for lookups as that is the default value.");
+
+            var fieldPropertyMap = GetFieldPropertyMap(TEntity);
+
+            // note, oddity with "var" implying a non-nullable type w/ SingleOrDefault... explicit variable type used...
+            KeyValuePair<IEntityField, PropertyInfo>? record = fieldPropertyMap.SingleOrDefault(x => x.Key.OrdinalPosition == ordinalPosition);
+
+            return record?.Key;
+        }
+
+        /// <summary>
         /// Retrieves the entity fields of the specified entity type based on the provided field types.
         /// </summary>
         /// <param name="TEntity">The type of the entity.</param>
@@ -652,6 +723,26 @@ namespace Sidub.Platform.Core
                 return Enumerable.Empty<Type>();
 
             result = TEntity.GetInterfaces().Where(x => x.GetInterface(nameof(IEntity)) is not null);
+
+            return result;
+        }
+
+        /// <summary>
+        /// Gets the entity relations for the specified parent entity.
+        /// </summary>
+        /// <param name="TParent">The type of the parent entity.</param>
+        /// <returns>The entity relations.</returns>
+        private static IEnumerable<IEntityRelation> GetEntityRelations(Type TParent)
+        {
+            var entityInterfaces = GetEntityInterfaces(TParent);
+
+            // retrieve relation properties - properties TParent and any interfaces which have an attribute implementing IEntityRelation
+            var properties = TParent
+                .GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)
+                .Union(entityInterfaces.SelectMany(x => x.GetProperties(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic)))
+                .Where(x => x.GetCustomAttributes(true).Any(y => y is IEntityRelation));
+
+            var result = properties.Select(x => x.GetCustomAttributes(true).OfType<IEntityRelation>().Single());
 
             return result;
         }

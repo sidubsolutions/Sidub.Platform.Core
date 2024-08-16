@@ -2,17 +2,17 @@
 {
 
     /// <summary>
-    /// Represents a type discriminator entity field.
+    /// Represents a signature entity field.
     /// </summary>
     /// <remarks>
-    /// This field is used to differentiate between different types of entities.
+    /// This field is used to digitally sign an entity.
     /// </remarks>
-    public record TypeDiscriminatorEntityField : IEntityField
+    public record SignatureEntityField : IEntityField
     {
 
         #region Member variables
 
-        private static TypeDiscriminatorEntityField? _instance = null;
+        private static SignatureEntityField? _instance = null;
         private static readonly object _instanceLock = new object();
 
         #endregion
@@ -27,17 +27,17 @@
         /// <summary>
         /// Gets the name of the field.
         /// </summary>
-        public string FieldName => "__sidub_entityType";
+        public string FieldName => "__sidub_entitySignature";
 
         /// <summary>
         /// Gets the type of the field.
         /// </summary>
-        public Type FieldType => typeof(string);
+        public Type FieldType => typeof(byte[]);
 
         /// <summary>
         /// Gets the label of the field.
         /// </summary>
-        public string Label => "Type discriminator";
+        public string Label => "Signature";
 
         /// <summary>
         /// Gets the ordinal position of the field.
@@ -51,7 +51,7 @@
         /// <summary>
         /// Gets the singleton instance of the <see cref="TypeDiscriminatorEntityField"/> class.
         /// </summary>
-        public static TypeDiscriminatorEntityField Instance
+        public static SignatureEntityField Instance
         {
             get
             {
@@ -61,7 +61,7 @@
                     {
                         if (_instance is null)
                         {
-                            _instance = new TypeDiscriminatorEntityField();
+                            _instance = new SignatureEntityField();
                         }
                     }
                 }
