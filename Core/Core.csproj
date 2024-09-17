@@ -12,6 +12,7 @@
 		<PackageIcon>icon.png</PackageIcon>
 		<PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
 
 		<!-- Workaround: https://github.com/dotnet/sourcelink - Azure Repos not supporting symbol packages -->
 		<AllowedOutputExtensionsInPackageBuildOutputFolder>$(AllowedOutputExtensionsInPackageBuildOutputFolder);.pdb</AllowedOutputExtensionsInPackageBuildOutputFolder>
@@ -20,12 +21,17 @@
 	<ItemGroup>
 		<None Include="..\icon.png" Pack="true" PackagePath="\" Visible="False" />
 		<None Include="..\LICENSE.txt" Pack="true" PackagePath="\" Visible="False" />
+		<None Include="..\LICENSE-AGPLV3.txt" Pack="true" PackagePath="\" Visible="False" />
+		<None Include="..\LICENSE-PROPRIETARY.txt" Pack="true" PackagePath="\" Visible="False" />
+		<None Include="..\PRIVACY.txt" Pack="true" PackagePath="\" Visible="False" />
+		<None Include="..\TERMS.txt" Pack="true" PackagePath="\" Visible="False" />
+		<None Include="..\CONTRIBUTING.txt" Pack="true" PackagePath="\" Visible="False" />
 		<None Include="..\README.md" Pack="true" PackagePath="\" Visible="False" />
 
-		<PackageReference Include="Metalama.Framework" Version="2024.1.25" />
+		<PackageReference Include="Metalama.Framework" Version="2024.2.24" />
 
 		<PackageReference Include="Microsoft.Bcl.HashCode" Version="1.1.1" />
-		<PackageReference Include="Sidub.Platform.Localization" Version="1.0.13" />
+		<PackageReference Include="Sidub.Platform.Localization" Version="1.0.17" />
 		<PackageReference Include="System.Text.Json" Version="8.0.4" />
 	</ItemGroup>
 

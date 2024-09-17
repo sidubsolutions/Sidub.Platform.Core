@@ -10,11 +10,17 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{5643F2CD-EADB-4408-B717-95B5606E8CC7}"
 	ProjectSection(SolutionItems) = preProject
 		azure-pipelines.yml = azure-pipelines.yml
+		CONTRIBUTING.txt = CONTRIBUTING.txt
 		docfx.json = docfx.json
 		GitVersion.yml = GitVersion.yml
 		icon.png = icon.png
+		LICENSE-AGPLV3.txt = LICENSE-AGPLV3.txt
+		LICENSE-PROPRIETARY.txt = LICENSE-PROPRIETARY.txt
 		LICENSE.txt = LICENSE.txt
+		Core.sln.licenseheader = Core.sln.licenseheader
+		PRIVACY.txt = PRIVACY.txt
 		README.md = README.md
+		TERMS.txt = TERMS.txt
 	EndProjectSection
 EndProject
 Global
